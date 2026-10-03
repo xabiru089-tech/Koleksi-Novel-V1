@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NusaArchive - Web Koleksi Novel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen text-slate-100 relative overflow-x-hidden">
+
+    <!-- Dynamic Background Canvas -->
+    <canvas id="sky-canvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="backdrop-blur-md bg-black/40 border-b border-white/10 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('library')">
+                <i data-lucide="book-open" class="w-7 h-7 text-amber-400"></i>
+                <span class="font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500">NusaArchive</span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div id="time-display" class="text-xs font-mono px-3 py-1.5 rounded-full bg-white/10 backdrop-blur border border-white/10 flex items-center gap-2">
+                    <i id="time-icon" data-lucide="sun" class="w-4 h-4"></i>
+                    <span id="clock-text">00:00:00</span>
+                </div>
+                <button onclick="openNovelModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    Tambah Novel
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- VIEW 1: Perpustakaan (Library) -->
+        <section id="view-library" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                    <i data-lucide="library" class="w-6 h-6 text-amber-400"></i>
+                    Koleksi Novel
+                </h1>
+            </div>
+
+            <div id="novel-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"></div>
+        </section>
+
+        <!-- VIEW 2: Detail Novel & Daftar Bab -->
+        <section id="view-detail" class="hidden space-y-8">
+            <button onclick="showView('library')" class="text-xs font-semibold uppercase tracking-wider text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Perpustakaan
+            </button>
+
+            <div class="backdrop-blur-md bg-black/40 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6">
+                <img id="detail-cover" src="" alt="Cover" class="w-48 h-72 object-cover rounded-xl border border-white/20 shadow-2xl mx-auto md:mx-0">
+                <div class="space-y-4 flex-1">
+                    <h1 id="detail-title" class="text-3xl font-bold text-white"></h1>
+                    <p id="detail-author" class="text-amber-400 text-sm font-medium"></p>
+                    <p id="detail-synopsis" class="text-slate-300 text-sm leading-relaxed"></p>
+                    
+                    <div class="pt-4 border-t border-white/10 flex gap-3">
+                        <button onclick="openChapterModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+                            <i data-lucide="file-plus" class="w-4 h-4"></i>
+                            Tambah Bab Baru
+                        </button>
+                        <button onclick="deleteCurrentNovel()" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            Hapus Novel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="backdrop-blur-md bg-black/30 border border-white/10 rounded-2xl p-6 space-y-4">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="list" class="w-5 h-5 text-amber-400"></i>
+                    Daftar Bab
+                </h2>
+                <div id="chapter-list" class="divide-y divide-white/10"></div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: Baca Bab (Reader) -->
+        <section id="view-reader" class="hidden space-y-6 max-w-3xl mx-auto">
+            <div class="flex justify-between items-center backdrop-blur-md bg-black/40 p-4 rounded-xl border border-white/10">
+                <button onclick="showView('detail')" class="text-xs font-semibold uppercase tracking-wider text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Daftar Bab
+                </button>
+                <div id="reader-controls" class="flex gap-2">
+                    <button onclick="setReaderTheme('dark')" class="p-2 bg-slate-900 border border-white/20 rounded-lg text-xs">Dark</button>
+                    <button onclick="setReaderTheme('sepia')" class="p-2 bg-[#f4ecd8] text-slate-900 border border-amber-900/20 rounded-lg text-xs font-bold">Sepia</button>
+                </div>
+            </div>
+
+            <div id="reader-box" class="backdrop-blur-md bg-black/60 border border-white/10 rounded-2xl p-8 space-y-6">
+                <h1 id="reader-title" class="text-2xl font-bold text-center text-amber-400 border-b border-white/10 pb-4"></h1>
+                <div id="reader-content" class="novel-text text-slate-200"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: Tambah Novel -->
+    <div id="modal-novel" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md space-y-4">
+            <h3 class="text-xl font-bold text-white">Tambah Novel Baru</h3>
+            <form onsubmit="saveNovel(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-slate-400">Judul Novel</label>
+                    <input type="text" id="input-novel-title" required class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Penulis</label>
+                    <input type="text" id="input-novel-author" required class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">URL Sampul (Cover Image)</label>
+                    <input type="url" id="input-novel-cover" placeholder="https://..." required class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Sinopsis</label>
+                    <textarea id="input-novel-synopsis" rows="3" required class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-novel')" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Batal</button>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg text-sm">Simpan Novel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Tambah Bab -->
+    <div id="modal-chapter" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-2xl space-y-4">
+            <h3 class="text-xl font-bold text-white">Tambah Bab Baru</h3>
+            <form onsubmit="saveChapter(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-slate-400">Judul Bab (misal: Bab 1 - Awal Mula)</label>
+                    <input type="text" id="input-chapter-title" required class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Isi Bab Novel</label>
+                    <textarea id="input-chapter-content" rows="10" placeholder="Paste teks bab di sini..." required class="w-full bg-slate-800 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-amber-400 font-mono"></textarea>
+                    <p class="text-[10px] text-amber-400/80 mt-1">*Sistem secara otomatis merapikan jarak antar paragraf menjadi 1 kali spasi saat disimpan.</p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-chapter')" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Batal</button>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg text-sm">Simpan Bab</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+  </html>
+    
