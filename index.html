@@ -3,91 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Music Player - Frost Blossom Edition</title>
-    
-    <!-- FontAwesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS File -->
-    <link rel="stylesheet" href="style.css">
+    <title>AuraStudio — Professional Audio Engine & Suite</title>
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Dynamic Background & Visualizer Canvas -->
-    <div class="bg-container" id="bg-art"></div>
-    <canvas id="visualizer"></canvas>
-
-    <!-- App Card Container -->
-    <div class="player-card">
-        
-        <!-- Left Section: Clock & Artwork -->
-        <div class="left-panel">
-            <div class="clock-box">
-                <div class="clock-time" id="clock-time">00:00:00</div>
-                <div class="clock-date" id="clock-date">SENIN, 1 JANUARI 2026</div>
+    <div class="app-layout">
+        <!-- Sidebar Navigation & Tools -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-wave-square"></i></div>
+                <span class="brand-title">AURA ENGINE</span>
             </div>
 
-            <div class="album-art-wrapper" id="art-wrapper">
-                <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500" alt="Album Cover" class="album-art" id="album-cover">
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="player"><i class="fa-solid fa-compact-disc"></i> Studio Player</button>
+                <button class="nav-item" data-tab="eq"><i class="fa-solid fa-sliders"></i> Master Equalizer</button>
+                <button class="nav-item" data-tab="spatial"><i class="fa-solid fa-cubes"></i> 3D Spatial Stage</button>
+            </nav>
+
+            <!-- Utility Widget: Real-time System Time & BPM Counter -->
+            <div class="widget-card">
+                <div class="widget-label">STUDIO TIME</div>
+                <div class="clock-display" id="clock-display">00:00:00</div>
+                <div class="date-display" id="date-display">Senin, 5 Okt 2026</div>
             </div>
 
-            <div style="font-size: 0.75rem; opacity: 0.7; text-align: center;">
-                <i class="fa-solid fa-compact-disc"></i> Anime Audio Engine v2.0
+            <div class="widget-card">
+                <div class="widget-label">SMART BPM ESTIMATOR</div>
+                <div class="bpm-value" id="bpm-display">-- BPM</div>
+                <div class="bpm-status">Real-time Spectral Analysis</div>
             </div>
-        </div>
+        </aside>
 
-        <!-- Right Section: Player & Playlist Controls -->
-        <div class="right-panel">
-            <div class="header-actions">
-                <label for="file-input" class="upload-btn">
-                    <i class="fa-solid fa-folder-plus"></i> Tambah Lagu
-                </label>
-                <input type="file" id="file-input" accept="audio/*" multiple>
-                <span style="font-size: 0.8rem; color: var(--accent);"><i class="fa-solid fa-music"></i> Local Player</span>
-            </div>
-
-            <div class="song-info">
-                <div class="song-title" id="track-title">Pilih atau Upload Lagu...</div>
-                <div class="song-artist" id="track-artist">Anime Music Player</div>
-            </div>
-
-            <!-- Track Progress -->
-            <div class="progress-container">
-                <div class="progress-bar-bg" id="progress-bg">
-                    <div class="progress-fill" id="progress-fill"></div>
+        <!-- Main Studio Area -->
+        <main class="main-content">
+            
+            <!-- Top Action Header -->
+            <header class="top-bar">
+                <div class="file-uploader">
+                    <label for="audio-input" class="upload-btn">
+                        <i class="fa-solid fa-folder-open"></i> Impor Berkas Audio
+                    </label>
+                    <input type="file" id="audio-input" accept="audio/*" multiple hidden>
                 </div>
-                <div class="time-stamps">
-                    <span id="curr-time">00:00</span>
-                    <span id="dur-time">00:00</span>
+
+                <!-- Unik: Acoustic Ambient Environment Mixer -->
+                <div class="ambient-suite">
+                    <span class="ambient-title"><i class="fa-solid fa-cloud-rain"></i> Spatial Atmosphere:</span>
+                    <button class="ambient-btn" id="amb-rain"><i class="fa-solid fa-cloud-showers-heavy"></i> Rain</button>
+                    <button class="ambient-btn" id="amb-waves"><i class="fa-solid fa-water"></i> Ocean</button>
+                    <button class="ambient-btn" id="amb-fire"><i class="fa-solid fa-fire"></i> Vinyl Crackle</button>
                 </div>
+            </header>
+
+            <!-- Center Display Stage -->
+            <section class="stage-container">
+                <canvas id="main-visualizer"></canvas>
+
+                <div class="track-header-overlay">
+                    <div class="track-badge">FLAC / HIGH-RES AUDIO</div>
+                    <h1 class="track-title-main" id="track-title">Siap Memutar Studio Audio</h1>
+                    <p class="track-artist-main" id="track-artist">Silakan impor berkas dari perangkat Anda</p>
+                </div>
+            </section>
+
+            <!-- Master Control Dock -->
+            <section class="control-dock">
+                <!-- Timeline Seeking -->
+                <div class="seek-bar-container">
+                    <span class="time-code" id="time-current">00:00.0</span>
+                    <div class="seek-track" id="seek-track">
+                        <div class="seek-progress" id="seek-progress"></div>
+                    </div>
+                    <span class="time-code" id="time-total">00:00.0</span>
+                </div>
+
+                <div class="dock-controls">
+                    <!-- Left Utility Controls -->
+                    <div class="dock-group">
+                        <button class="tool-btn" id="btn-loop-ab" title="Fitur Unik: A-B Seamless Loop Marker">
+                            <i class="fa-solid fa-repeat"></i> <span class="badge-text">A-B</span>
+                        </button>
+                        <button class="tool-btn" id="btn-pitch-down" title="Pitch Shift Slow"><i class="fa-solid fa-gauge-simple-min"></i> -</button>
+                        <span class="pitch-readout" id="pitch-readout">1.00x</span>
+                        <button class="tool-btn" id="btn-pitch-up" title="Pitch Shift Speed"><i class="fa-solid fa-gauge-simple-high"></i> +</button>
+                    </div>
+
+                    <!-- Center Transport Playback Controls -->
+                    <div class="dock-group transport-group">
+                        <button class="transport-btn" id="btn-prev"><i class="fa-solid fa-backward-step"></i></button>
+                        <button class="transport-btn play-main" id="btn-play"><i class="fa-solid fa-play"></i></button>
+                        <button class="transport-btn" id="btn-next"><i class="fa-solid fa-forward-step"></i></button>
+                    </div>
+
+                    <!-- Right Audio Monitoring Controls -->
+                    <div class="dock-group">
+                        <i class="fa-solid fa-volume-high volume-icon"></i>
+                        <input type="range" class="master-volume" id="master-volume" min="0" max="1" step="0.01" value="0.85">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Right Drawer: Playlist & Smart Queue -->
+        <aside class="playlist-drawer">
+            <div class="drawer-header">
+                <h3>DAFTAR PUTAR STUDIO</h3>
+                <span class="track-count" id="track-count">0 Track</span>
             </div>
 
-            <!-- Action Controls -->
-            <div class="controls">
-                <button class="btn-control" id="btn-shuffle"><i class="fa-solid fa-shuffle"></i></button>
-                <button class="btn-control" id="btn-prev"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="btn-control btn-play" id="btn-play"><i class="fa-solid fa-play"></i></button>
-                <button class="btn-control" id="btn-next"><i class="fa-solid fa-forward-step"></i></button>
-                <button class="btn-control" id="btn-repeat"><i class="fa-solid fa-repeat"></i></button>
+            <div class="playlist-scroll" id="playlist-container">
+                <!-- Dynamic Items Generated by JavaScript -->
             </div>
-
-            <!-- Volume Control -->
-            <div class="volume-container">
-                <i class="fa-solid fa-volume-high" id="vol-icon" style="font-size: 0.9rem;"></i>
-                <input type="range" class="volume-slider" id="vol-slider" min="0" max="1" step="0.01" value="0.8">
-            </div>
-
-            <!-- Interactive Playlist -->
-            <div class="playlist-wrapper" id="playlist">
-                <!-- Playlist Item akan di-generate via JavaScript -->
-            </div>
-        </div>
+        </aside>
     </div>
 
-    <audio id="audio-element"></audio>
+    <audio id="audio-core"></audio>
 
-    <!-- Custom JavaScript File -->
-    <script src="script.js"></script>
+    <!-- Application Architecture Modules -->
+    <script src="audio-engine.js"></script>
+    <script src="visualizer.js"></script>
+    <script src="app.js"></script>
+    
 </body>
-                </html>
+    </html>
